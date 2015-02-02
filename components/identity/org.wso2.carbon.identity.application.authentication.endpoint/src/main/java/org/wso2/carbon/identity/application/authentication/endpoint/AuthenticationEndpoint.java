@@ -18,14 +18,11 @@
 
 package org.wso2.carbon.identity.application.authentication.endpoint;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthenticationEndpoint extends HttpServlet {
 
@@ -78,6 +75,8 @@ public class AuthenticationEndpoint extends HttpServlet {
                 loadPage = "passivests_login.do";
             } else if (request.getParameter("type").equals("oauth2") || request.getParameter("type").equals("oidc")) {
                 loadPage = "oauth2_login.do";
+            }else if (request.getParameter("type").equals("duo")) {
+                loadPage = "duo_login.do";
             }
             request.getRequestDispatcher(loadPage).forward(request, response);
         } catch (Exception e) {

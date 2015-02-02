@@ -78,6 +78,11 @@
         <servlet-class>org.wso2.carbon.identity.application.authentication.endpoint.passivests.PassiveSTSLogin</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>DuoLogin</servlet-name>
+        <servlet-class>org.wso2.carbon.identity.application.authentication.endpoint.duo.DuoLogin</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>AuthenticationEndpoint</servlet-name>
         <url-pattern>/login.do</url-pattern>
@@ -134,6 +139,11 @@
     <servlet-mapping>
         <servlet-name>PassiveSTSLogin</servlet-name>
         <url-pattern>/passivests_login.do</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>DuoLogin</servlet-name>
+        <url-pattern>/duo_login.do</url-pattern>
     </servlet-mapping>
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>
