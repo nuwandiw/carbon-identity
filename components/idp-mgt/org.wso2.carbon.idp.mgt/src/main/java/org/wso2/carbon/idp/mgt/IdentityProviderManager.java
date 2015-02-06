@@ -29,15 +29,7 @@ import org.wso2.carbon.core.util.KeyStoreManager;
 import org.wso2.carbon.identity.application.common.ApplicationAuthenticatorService;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.ProvisioningConnectorService;
-import org.wso2.carbon.identity.application.common.model.ClaimConfig;
-import org.wso2.carbon.identity.application.common.model.ClaimMapping;
-import org.wso2.carbon.identity.application.common.model.FederatedAuthenticatorConfig;
-import org.wso2.carbon.identity.application.common.model.IdentityProvider;
-import org.wso2.carbon.identity.application.common.model.LocalRole;
-import org.wso2.carbon.identity.application.common.model.PermissionsAndRoleConfig;
-import org.wso2.carbon.identity.application.common.model.Property;
-import org.wso2.carbon.identity.application.common.model.ProvisioningConnectorConfig;
-import org.wso2.carbon.identity.application.common.model.RoleMapping;
+import org.wso2.carbon.identity.application.common.model.*;
 import org.wso2.carbon.identity.application.common.util.IdentityApplicationConstants;
 import org.wso2.carbon.identity.application.common.util.IdentityApplicationManagementUtil;
 import org.wso2.carbon.idp.mgt.dao.CacheBackedIdPMgtDAO;
@@ -54,13 +46,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import java.security.KeyStore;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class IdentityProviderManager {
 
@@ -268,6 +254,54 @@ public class IdentityProviderManager {
         passiveSTSFedAuthn
                 .setProperties(propertiesList.toArray(new Property[propertiesList.size()]));
         fedAuthnCofigs.add(passiveSTSFedAuthn);
+
+        FederatedAuthenticatorConfig duoAuthn = IdentityApplicationManagementUtil
+                .getFederatedAuthenticator(identityProvider.getFederatedAuthenticatorConfigs(),
+                        IdentityApplicationConstants.Authenticator.Duo.AUTHN_NAME);
+        if (duoAuthn == null) {
+            duoAuthn = new FederatedAuthenticatorConfig();
+            duoAuthn.setName(IdentityApplicationConstants.Authenticator.Duo.AUTHN_NAME);
+        }
+        propertiesList = new ArrayList<Property>(Arrays.asList(duoAuthn.getProperties()));
+        if (IdentityApplicationManagementUtil.getProperty(duoAuthn.getProperties(),
+                IdentityApplicationConstants.Authenticator.Duo.IDP_NAME) == null) {
+            Property idpName = new Property();
+            idpName.setName(IdentityApplicationConstants.Authenticator.Duo.IDP_NAME);
+            propertiesList.add(idpName);
+        }
+        if (IdentityApplicationManagementUtil.getProperty(duoAuthn.getProperties(),
+                IdentityApplicationConstants.Authenticator.Duo.ADMIN_IKEY) == null) {
+            Property adminIKey = new Property();
+            adminIKey.setName(IdentityApplicationConstants.Authenticator.Duo.ADMIN_IKEY);
+            propertiesList.add(adminIKey);
+        }
+        if (IdentityApplicationManagementUtil.getProperty(duoAuthn.getProperties(),
+                IdentityApplicationConstants.Authenticator.Duo.ADMIN_SKEY) == null) {
+            Property adminSKey = new Property();
+            adminSKey.setName(IdentityApplicationConstants.Authenticator.Duo.ADMIN_SKEY);
+            propertiesList.add(adminSKey);
+        }
+        if (IdentityApplicationManagementUtil.getProperty(duoAuthn.getProperties(),
+                IdentityApplicationConstants.Authenticator.Duo.WEB_IKEY) == null) {
+            Property webIKey = new Property();
+            webIKey.setName(IdentityApplicationConstants.Authenticator.Duo.WEB_IKEY);
+            propertiesList.add(webIKey);
+        }
+        if (IdentityApplicationManagementUtil.getProperty(duoAuthn.getProperties(),
+                IdentityApplicationConstants.Authenticator.Duo.WEB_SKEY) == null) {
+            Property webSKey = new Property();
+            webSKey.setName(IdentityApplicationConstants.Authenticator.Duo.WEB_SKEY);
+            propertiesList.add(webSKey);
+        }
+        if (IdentityApplicationManagementUtil.getProperty(duoAuthn.getProperties(),
+                IdentityApplicationConstants.Authenticator.Duo.HOST) == null) {
+            Property host = new Property();
+            host.setName(IdentityApplicationConstants.Authenticator.Duo.HOST);
+            propertiesList.add(host);
+        }
+        duoAuthn.setProperties(propertiesList.toArray(new Property[propertiesList.size()]));
+        fedAuthnCofigs.add(duoAuthn);
+
         identityProvider.setFederatedAuthenticatorConfigs(fedAuthnCofigs
                 .toArray(new FederatedAuthenticatorConfig[fedAuthnCofigs.size()]));
 

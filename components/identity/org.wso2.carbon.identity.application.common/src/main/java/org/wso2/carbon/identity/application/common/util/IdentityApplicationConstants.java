@@ -95,6 +95,16 @@ public class IdentityApplicationConstants {
             public static final String NAME = "wstrust";
         }
 
+        public static class Duo {
+            public static final String AUTHN_NAME = "DuoAuthenticator";
+            public static final String WEB_IKEY = "webIntegrationKey";
+            public static final String WEB_SKEY = "webSecretKey";
+            public static final String ADMIN_IKEY = "adminIntegrationKey";
+            public static final String ADMIN_SKEY = "adminSecretKey";
+            public static final String HOST = "duoHost";
+            public static final String IDP_NAME = "idPName";
+        }
+
     }
 
     public static class OAuth10A {

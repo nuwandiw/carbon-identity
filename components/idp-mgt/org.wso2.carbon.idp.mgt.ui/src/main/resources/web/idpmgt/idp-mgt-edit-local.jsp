@@ -67,10 +67,21 @@
         } else if(IdentityApplicationConstants.Authenticator.PassiveSTS.NAME.equals(federatedAuthenticator.getName())){
             passiveSTSUrl = IdPManagementUIUtil.getProperty(properties,
                     IdentityApplicationConstants.Authenticator.PassiveSTS.PASSIVE_STS_URL).getValue();
-        } else if ("DuoAuth".equals(federatedAuthenticator.getName())){
-            idPName = IdPManagementUIUtil.getProperty(properties,
-                  "idPName").getValue();
-        }
+        } else if (IdentityApplicationConstants.Authenticator.Duo.AUTHN_NAME.equals(federatedAuthenticator.getName())){
+              idPName = IdPManagementUIUtil.getProperty(properties,
+                    IdentityApplicationConstants.Authenticator.Duo.IDP_NAME).getValue();
+              webIntegrationKey = IdPManagementUIUtil.getProperty(properties,
+                    IdentityApplicationConstants.Authenticator.Duo.WEB_IKEY).getValue();
+              webSecretKey = IdPManagementUIUtil.getProperty(properties,
+                    IdentityApplicationConstants.Authenticator.Duo.WEB_SKEY).getValue();
+              adminIntegrationKey = IdPManagementUIUtil.getProperty(properties,
+                    IdentityApplicationConstants.Authenticator.Duo.ADMIN_IKEY).getValue();
+              adminSecretKey = IdPManagementUIUtil.getProperty(properties,
+                    IdentityApplicationConstants.Authenticator.Duo.ADMIN_SKEY).getValue();
+              duoHost = IdPManagementUIUtil.getProperty(properties,
+                    IdentityApplicationConstants.Authenticator.Duo.HOST).getValue();
+
+          }
     }
     String scimUserEp = null;
     String scimGroupEp = null;
@@ -264,6 +275,51 @@ jQuery(document).ready(function(){
                                 <input id="idPName" name="idPName" type="text" value="<%=idPName%>"/>
                                 <div class="sectionHelp">
                                     <fmt:message key='duo.idp.name.help'/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="leftCol-med labelField"><fmt:message key='duo.host'/>:</td>
+                            <td>
+                                <input id="duoHost" name="duoHost" type="text" value="<%=duoHost%>"/>
+                                <div class="sectionHelp">
+                                    <fmt:message key='duo.idp.name.help'/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="leftCol-med labelField"><fmt:message key='duo.web.secret.key'/>:</td>
+                            <td>
+                                <input id="webSecretKey" name="webSecretKey" type="text" value="<%=webSecretKey%>"/>
+                                <div class="sectionHelp">
+                                    <fmt:message key='duo.web.secret.key.help'/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="leftCol-med labelField"><fmt:message key='duo.web.integration.key'/>:</td>
+                            <td>
+                                <input id="webIntegrationKey" name="webIntegrationKey" type="text" value="<%=webIntegrationKey%>"/>
+                                <div class="sectionHelp">
+                                    <fmt:message key='duo.web.integration.help'/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="leftCol-med labelField"><fmt:message key='duo.admin.secret.key'/>:</td>
+                            <td>
+                                <input id="adminSecretKey" name="adminSecretKey" type="text" value="<%=adminSecretKey%>"/>
+                                <div class="sectionHelp">
+                                    <fmt:message key='duo.admin.secret.help'/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="leftCol-med labelField"><fmt:message key='duo.admin.integration.key'/>:</td>
+                            <td>
+                                <input id="adminIntegrationKey" name="adminIntegrationKey" type="text" value="<%=adminIntegrationKey%>"/>
+                                <div class="sectionHelp">
+                                    <fmt:message key='duo.admin.integration.help'/>
                                 </div>
                             </td>
                         </tr>

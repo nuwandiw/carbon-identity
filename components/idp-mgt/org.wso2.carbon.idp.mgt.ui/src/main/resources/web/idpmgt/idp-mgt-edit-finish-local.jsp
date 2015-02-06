@@ -55,12 +55,32 @@
         samlFedAuthn.setProperties(properties);
 
         FederatedAuthenticatorConfig duoAuth = new FederatedAuthenticatorConfig();
-        duoAuth.setName("DuoAuth");
-        Property[] duoProperties = new Property[1];
-        Property duoProperty = new Property();
-        duoProperty.setName("idPName");
-        duoProperty.setValue(CharacterEncoder.getSafeText(request.getParameter("idPName")));
-        duoProperties[0] = duoProperty;
+        duoAuth.setName(IdentityApplicationConstants.Authenticator.Duo.AUTHN_NAME);
+        Property[] duoProperties = new Property[6];
+        Property duoIdPName = new Property();
+        duoIdPName.setName(IdentityApplicationConstants.Authenticator.Duo.IDP_NAME);
+        duoIdPName.setValue(CharacterEncoder.getSafeText(request.getParameter("idPName")));
+        duoProperties[0] = duoIdPName;
+        Property duoWebIKey = new Property();
+        duoWebIKey.setName(IdentityApplicationConstants.Authenticator.Duo.WEB_IKEY);
+        duoWebIKey.setValue(CharacterEncoder.getSafeText(request.getParameter("webIntegrationKey")));
+        duoProperties[1] = duoWebIKey;
+        Property duoWebSKey = new Property();
+        duoWebSKey.setName(IdentityApplicationConstants.Authenticator.Duo.WEB_SKEY);
+        duoWebSKey.setValue(CharacterEncoder.getSafeText(request.getParameter("webSecretKey")));
+        duoProperties[2] = duoWebSKey;
+        Property duoAdminIkey = new Property();
+        duoAdminIkey.setName(IdentityApplicationConstants.Authenticator.Duo.ADMIN_IKEY);
+        duoAdminIkey.setValue(CharacterEncoder.getSafeText(request.getParameter("adminIntegrationKey")));
+        duoProperties[3] = duoAdminIkey;
+        Property duoAdminSKey = new Property();
+        duoAdminSKey.setName(IdentityApplicationConstants.Authenticator.Duo.ADMIN_SKEY);
+        duoAdminSKey.setValue(CharacterEncoder.getSafeText(request.getParameter("adminSecretKey")));
+        duoProperties[4] = duoAdminSKey;
+        Property host = new Property();
+        host.setName(IdentityApplicationConstants.Authenticator.Duo.HOST);
+        host.setValue(CharacterEncoder.getSafeText(request.getParameter("duoHost")));
+        duoProperties[5] = host;
         duoAuth.setProperties(duoProperties);
 
 
