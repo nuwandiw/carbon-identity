@@ -53,8 +53,21 @@
         property.setValue(CharacterEncoder.getSafeText(request.getParameter("idPEntityId")));
         properties[0] = property;
         samlFedAuthn.setProperties(properties);
-        FederatedAuthenticatorConfig[] federatedAuthenticators = new FederatedAuthenticatorConfig[1];
+
+        FederatedAuthenticatorConfig duoAuth = new FederatedAuthenticatorConfig();
+        duoAuth.setName("DuoAuth");
+        Property[] duoProperties = new Property[1];
+        Property duoProperty = new Property();
+        duoProperty.setName("idPName");
+        duoProperty.setValue(CharacterEncoder.getSafeText(request.getParameter("idPName")));
+        duoProperties[0] = duoProperty;
+        duoAuth.setProperties(duoProperties);
+
+
+        FederatedAuthenticatorConfig[] federatedAuthenticators = new FederatedAuthenticatorConfig[2];
         federatedAuthenticators[0] = samlFedAuthn;
+        federatedAuthenticators[1] = duoAuth;
+
         identityProvider.setFederatedAuthenticatorConfigs(federatedAuthenticators);
         client.updateResidentIdP(identityProvider);
         String message = MessageFormat.format(resourceBundle.getString("success.updating.resident.idp"),null);

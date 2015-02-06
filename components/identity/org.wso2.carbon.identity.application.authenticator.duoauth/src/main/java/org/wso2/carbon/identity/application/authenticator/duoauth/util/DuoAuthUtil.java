@@ -2,7 +2,12 @@ package org.wso2.carbon.identity.application.authenticator.duoauth.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
+import org.wso2.carbon.identity.application.common.model.FederatedAuthenticatorConfig;
+import org.wso2.carbon.identity.application.common.model.IdentityProvider;
+import org.wso2.carbon.identity.application.common.model.Property;
 import org.wso2.carbon.identity.provisioning.IdentityProvisioningException;
+import org.wso2.carbon.idp.mgt.IdentityProviderManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.HashMap;
@@ -19,7 +24,7 @@ public class DuoAuthUtil {
     private static final String PROVISIONING_USER = "UN";
 
     public String buildUserId(String username, String provisioningPattern,
-                                 String separator, String idpName)
+                              String separator, String idpName)
             throws IdentityProvisioningException {
 
         Map<String, String> provValues = new HashMap<String, String>();
@@ -68,6 +73,7 @@ public class DuoAuthUtil {
     }
 
     private String getDomainFromUserName(String username) {
+
         int index;
         if ((index = username.indexOf("/")) > 0) {
             String domain = username.substring(0, index);
@@ -77,11 +83,40 @@ public class DuoAuthUtil {
     }
 
     private String removeDomainFromUserName(String username) {
+
         int index;
         if ((index = username.indexOf(CarbonConstants.DOMAIN_SEPARATOR)) >= 0) {
             // remove domain name if exist
             username = username.substring(index + 1);
         }
         return username;
+    }
+
+    public String getAuthConfigValue(String tenantDomain, String propName)
+            throws IdentityApplicationManagementException {
+
+        if (tenantDomain.isEmpty() || propName.isEmpty()) {
+            return null;
+        }
+
+        String propValue = null;
+
+        IdentityProvider residentIdP
+                = IdentityProviderManager.getInstance().getResidentIdP(tenantDomain);
+
+        FederatedAuthenticatorConfig[] fedCons
+                = residentIdP.getFederatedAuthenticatorConfigs();
+
+        for (FederatedAuthenticatorConfig fedConf : fedCons) {
+            if ("DuoAuthenticator".equals(fedConf.getName())) {
+                Property[] properties = fedConf.getProperties();
+                for (Property property : properties) {
+                    if (propName.equals(property.getName())) {
+                        propValue = property.getValue();
+                    }
+                }
+            }
+        }
+        return propValue;
     }
 }

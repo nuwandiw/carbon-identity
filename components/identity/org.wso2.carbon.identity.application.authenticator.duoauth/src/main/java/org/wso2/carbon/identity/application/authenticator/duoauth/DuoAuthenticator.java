@@ -36,10 +36,7 @@ import org.wso2.carbon.identity.application.authentication.framework.util.Framew
 import org.wso2.carbon.identity.application.authenticator.duoauth.internal.DuoAuthenticatorServiceComponent;
 import org.wso2.carbon.identity.application.authenticator.duoauth.util.DuoAuthUtil;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
-import org.wso2.carbon.identity.application.common.model.ClaimMapping;
-import org.wso2.carbon.identity.application.common.model.IdentityProvider;
-import org.wso2.carbon.identity.application.common.model.Property;
-import org.wso2.carbon.identity.application.common.model.ProvisioningConnectorConfig;
+import org.wso2.carbon.identity.application.common.model.*;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.provisioning.IdentityProvisioningException;
@@ -86,6 +83,7 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
 
         String username = null;
         String loginPage = ConfigurationFacade.getInstance().getAuthenticationEndpointURL();
+        DuoAuthUtil duoAuthUtil = new DuoAuthUtil();
         AKEY = DuoAuthenticatorConstants.stringGenerator();
 
         for (int i = context.getSequenceConfig().getStepMap().size() - 1; i > 0; i--) {
@@ -94,7 +92,6 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
             if (context.getSequenceConfig().getStepMap().get(i).getAuthenticatedUser() != null &&
                     context.getSequenceConfig().getStepMap().get(i).getAuthenticatedAutenticator()
                             .getApplicationAuthenticator() instanceof LocalApplicationAuthenticator) {
-
                 username = context.getSequenceConfig().getStepMap().get(i).getAuthenticatedUser();
                 if (log.isDebugEnabled()) {
                     log.debug("username :" + username);
@@ -109,6 +106,35 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
 
         if (username != null) {
 
+            String tenantDomain = MultitenantUtils.getTenantDomain(username);
+
+            String host = null;
+            String adminIKey = null;
+            String adminSKey = null;
+            String webIKey = null;
+            String webSKey = null;
+
+            try {
+
+                host = duoAuthUtil.getAuthConfigValue(tenantDomain,
+                        DuoAuthenticatorConstants.HOST);
+                adminIKey = duoAuthUtil.getAuthConfigValue(tenantDomain,
+                        DuoAuthenticatorConstants.ADMIN_IKEY);
+                adminSKey = duoAuthUtil.getAuthConfigValue(tenantDomain,
+                        DuoAuthenticatorConstants.ADMIN_SKEY);
+                webIKey = duoAuthUtil.getAuthConfigValue(tenantDomain,
+                        DuoAuthenticatorConstants.IKEY);
+                webSKey = duoAuthUtil.getAuthConfigValue(tenantDomain,
+                        DuoAuthenticatorConstants.SKEY);
+
+            } catch (IdentityApplicationManagementException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug(DuoAuthenticatorConstants.DuoErrors.ERROR_IDP_CONFIG);
+                }
+                throw new AuthenticationFailedException(
+                        DuoAuthenticatorConstants.DuoErrors.ERROR_IDP_CONFIG, e);
+            }
+
             int tenantId = 0;
             try {
 
@@ -120,43 +146,48 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
 
                 if (userRealm != null) {
 
-                    UserStoreManager userStoreManager = (UserStoreManager) userRealm.getUserStoreManager();
+                    UserStoreManager userStoreManager
+                            = (UserStoreManager) userRealm.getUserStoreManager();
 
                     mobile = userStoreManager.getUserClaimValue(tenantAwareUsername,
-                        DuoAuthenticatorConstants.MOBILE_CLAIM, null);
+                            DuoAuthenticatorConstants.MOBILE_CLAIM, null);
 
                     if (log.isDebugEnabled()) {
                         log.debug("mobile number : " + mobile);
                     }
 
-                    if(mobile != null){
+                    if (mobile != null) {
+                        IdentityProvider duoIdP = null;
+                        String duoIdpName = duoAuthUtil.getAuthConfigValue(tenantDomain,
+                                DuoAuthenticatorConstants.PROVISION_IDP);
 
-                        String tenantDomain = MultitenantUtils.getTenantDomain(username);
+                        if (duoIdpName != null) {
+                            duoIdP = IdentityProviderManager.getInstance()
+                                    .getIdPByName(duoIdpName, tenantDomain);
+                        }
 
-                        //Getting IdP for Duo provisioning
-                        IdentityProvider duoIdP = IdentityProviderManager.getInstance()
-                                .getIdPByName(getAuthenticatorConfig().getParameterMap()
-                                                .get(DuoAuthenticatorConstants.PROVISION_IDP),
-                                        tenantDomain);
-
-                        if(duoIdP != null){
+                        if (duoIdP != null) {
 
                             String userIdClaim = null;
-                            String  userIdClaimUri = duoIdP.getClaimConfig().getUserClaimURI();
+                            String userIdClaimUri = duoIdP.getClaimConfig().getUserClaimURI();
 
-                            if (userIdClaimUri != null){
+                            if (userIdClaimUri != null) {
                                 String idClaim = null;
 
-                                for (ClaimMapping claimMapping : duoIdP.getClaimConfig().getClaimMappings()) {
-                                    if (userIdClaimUri.equals(claimMapping.getRemoteClaim().getClaimUri())) {
+                                for (ClaimMapping claimMapping :
+                                        duoIdP.getClaimConfig().getClaimMappings()) {
+
+                                    if (userIdClaimUri.equals(claimMapping.getRemoteClaim()
+                                            .getClaimUri())) {
                                         idClaim = claimMapping.getLocalClaim().getClaimUri();
                                         break;
                                     }
                                 }
-                               userIdClaim = userStoreManager.getUserClaimValue(tenantAwareUsername, idClaim, null);
+                                userIdClaim = userStoreManager.getUserClaimValue(tenantAwareUsername,
+                                        idClaim, null);
                             }
 
-                            if(userIdClaim != null){
+                            if (userIdClaim != null) {
 
                                 //Assigning user claim to the userId
                                 duoUserId = userIdClaim;
@@ -171,37 +202,42 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
                                         duoIdP.getProvisioningConnectorConfigs();
 
                                 //Getting user Id pattern from the Duo provisioning connector
-                                for(ProvisioningConnectorConfig config : duoProConfig){
-                                    if(DuoConnectorConstants.DUO.equals(config.getName())){
-                                        for(Property property : config.getProvisioningProperties()){
-                                            if(DuoConnectorConstants.ID_PATTERN.equals(property.getName())){
+                                for (ProvisioningConnectorConfig config : duoProConfig) {
+                                    if (DuoConnectorConstants.DUO.equals(config.getName())) {
+                                        for (Property property : config.getProvisioningProperties()) {
+                                            if (DuoConnectorConstants.ID_PATTERN
+                                                    .equals(property.getName())) {
+
                                                 userIdPattern = property.getValue();
-                                            } else if(DuoConnectorConstants.SEPARATOR.equals(property.getName())){
+
+                                            } else if (DuoConnectorConstants.SEPARATOR
+                                                    .equals(property.getName())) {
+
                                                 separator = property.getValue();
                                             }
                                         }
                                     }
                                 }
 
-                                if(userIdPattern != null && separator != null){
-
-                                    DuoAuthUtil duoAuthUtil = new DuoAuthUtil();
+                                if (userIdPattern != null && separator != null) {
 
                                     try {
                                         //Building provisioned user Id according to the pattern
-                                        userIdFromPattern = duoAuthUtil.buildUserId(username, userIdPattern,
+                                        userIdFromPattern
+                                                = duoAuthUtil.buildUserId(username, userIdPattern,
                                                 separator, duoIdP.getIdentityProviderName());
 
                                         if (log.isDebugEnabled()) {
                                             log.debug("formatted user Id : " + userIdFromPattern);
                                         }
                                     } catch (IdentityProvisioningException e) {
-                                        if(log.isDebugEnabled()){
-                                            log.debug(DuoAuthenticatorConstants.DuoErrors.ERROR_ID_PATTERN);
+                                        if (log.isDebugEnabled()) {
+                                            log.debug(
+                                                    DuoAuthenticatorConstants.DuoErrors.ERROR_ID_PATTERN);
                                         }
 
-                                        throw new AuthenticationFailedException(DuoAuthenticatorConstants
-                                                .DuoErrors.ERROR_ID_PATTERN, e);
+                                        throw new AuthenticationFailedException(
+                                                DuoAuthenticatorConstants.DuoErrors.ERROR_ID_PATTERN, e);
                                     }
                                 }
 
@@ -241,7 +277,7 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
                 //In case of no IdP configured, duo userId is assumed to be same as local username
                 duoUserId = username;
 
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug(DuoAuthenticatorConstants.DuoErrors.ERROR_IDP);
                 }
             }
@@ -253,16 +289,13 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
 
                 //Initiate Duo API request to get the user
                 Http duoRequest = new Http(DuoAuthenticatorConstants.HTTP_GET,
-                        getAuthenticatorConfig().getParameterMap().get(DuoAuthenticatorConstants.HOST),
-                        DuoAuthenticatorConstants.API_USER);
+                        host, DuoAuthenticatorConstants.API_USER);
 
                 duoRequest.addParam(DuoAuthenticatorConstants.DUO_USERNAME, duoUserId);
 
                 try {
 
-                    duoRequest.signRequest(getAuthenticatorConfig().getParameterMap()
-                            .get(DuoAuthenticatorConstants.ADMIN_IKEY), getAuthenticatorConfig()
-                            .getParameterMap().get(DuoAuthenticatorConstants.ADMIN_SKEY));
+                    duoRequest.signRequest(adminIKey, adminSKey);
 
                 } catch (UnsupportedEncodingException e) {
 
@@ -327,10 +360,8 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
 
                                 if (mobile.equals(number)) {
 
-                                    String sig_request = DuoWeb.signRequest(getAuthenticatorConfig()
-                                                    .getParameterMap().get(DuoAuthenticatorConstants.IKEY),
-                                            getAuthenticatorConfig().getParameterMap()
-                                                    .get(DuoAuthenticatorConstants.SKEY), AKEY, duoUserId);
+                                    String sig_request = DuoWeb.signRequest(webIKey,
+                                            webSKey, AKEY, duoUserId);
 
                                     String DuoUrl = loginPage + "?" + FrameworkConstants.RequestParams.AUTHENTICATOR +
                                             "=" + getName() + ":" + FrameworkConstants.LOCAL_IDP_NAME + "&" +
@@ -340,8 +371,7 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
                                             sig_request + "&" + FrameworkConstants.SESSION_DATA_KEY + "=" +
                                             context.getContextIdentifier() + "&" +
                                             DuoAuthenticatorConstants.RequestParams.DUO_HOST + "=" +
-                                            getAuthenticatorConfig().getParameterMap()
-                                                    .get(DuoAuthenticatorConstants.HOST);
+                                            host;
 
 
                                     try {
@@ -409,11 +439,12 @@ public class DuoAuthenticator extends AbstractApplicationAuthenticator
 
         String username = null;
 
+        String webIkey = context.getAuthenticatorProperties().get(DuoAuthenticatorConstants.IKEY);
+        String webSKey = context.getAuthenticatorProperties().get(DuoAuthenticatorConstants.SKEY);
+
         try {
-            username = DuoWeb.verifyResponse(getAuthenticatorConfig().getParameterMap()
-                    .get(DuoAuthenticatorConstants.IKEY), getAuthenticatorConfig().getParameterMap()
-                    .get(DuoAuthenticatorConstants.SKEY), AKEY, request
-                    .getParameter(DuoAuthenticatorConstants.SIG_RESPONSE));
+            username = DuoWeb.verifyResponse(webIkey, webSKey, AKEY,
+                    request.getParameter(DuoAuthenticatorConstants.SIG_RESPONSE));
 
             if (log.isDebugEnabled()) {
                 log.debug("Authenticated user: " + username);

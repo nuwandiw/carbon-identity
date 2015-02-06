@@ -23,19 +23,18 @@ import java.util.Random;
 
 /**
  * Constants used by the DuoAuthenticator
- *
  */
-public abstract class DuoAuthenticatorConstants{
-	
-	public static final String AUTHENTICATOR_NAME = "DuoAuthenticator";
-	public static final String AUTHENTICATOR_FRIENDLY_NAME = "duo";
+public abstract class DuoAuthenticatorConstants {
 
-    public static final String IKEY = "IntegrationKey";
-    public static final String SKEY = "SecretKey";
-    public static final String ADMIN_IKEY = "AdminIntegrationKey";
-    public static final String ADMIN_SKEY = "AdminSecretKey";
-    public static final String PROVISION_IDP  = "ProvisioningIdP";
-    public static final String HOST = "DuoHost";
+    public static final String AUTHENTICATOR_NAME = "DuoAuthenticator";
+    public static final String AUTHENTICATOR_FRIENDLY_NAME = "duo";
+
+    public static final String IKEY = "webIntegrationKey";
+    public static final String SKEY = "webSecretKey";
+    public static final String ADMIN_IKEY = "adminIntegrationKey";
+    public static final String ADMIN_SKEY = "adminSecretKey";
+    public static final String PROVISION_IDP = "idPName";
+    public static final String HOST = "duoHost";
     public static final String SIG_RESPONSE = "sig_response";
 
     public static final String MOBILE_CLAIM = "http://wso2.org/claims/mobile";
@@ -69,6 +68,7 @@ public abstract class DuoAuthenticatorConstants{
         public static final String ERROR_ID_PATTERN = "Error occurred while building user Id according to the given pattern";
         public static final String ERROR_IDP = "Error occurred while getting the IdP";
         public static final String ERROR_DUO_ID = "Duo UserID not found";
+        public static final String ERROR_IDP_CONFIG = "Error while getting IdP configuration properties";
     }
 
     /**
@@ -76,11 +76,11 @@ public abstract class DuoAuthenticatorConstants{
      *
      * @return
      */
-    public static String stringGenerator(){
+    public static String stringGenerator() {
         StringBuilder sb = new StringBuilder(42);
         Random rnd = new Random();
 
-        for( int i = 0; i < 42; i++ ){
+        for (int i = 0; i < 42; i++) {
             sb.append(RAND.charAt(rnd.nextInt(DuoAuthenticatorConstants.RAND.length())));
         }
         return sb.toString();

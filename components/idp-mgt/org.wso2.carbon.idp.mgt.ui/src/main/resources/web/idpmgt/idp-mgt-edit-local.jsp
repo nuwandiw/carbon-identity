@@ -43,6 +43,7 @@
     String tokenUrl = null;
     String userInfoUrl = null;
     String passiveSTSUrl = null;
+    String idPName = null;
     FederatedAuthenticatorConfig[] federatedAuthenticators = residentIdentityProvider.getFederatedAuthenticatorConfigs();
     for(FederatedAuthenticatorConfig federatedAuthenticator : federatedAuthenticators){
         Property[] properties = federatedAuthenticator.getProperties();
@@ -66,6 +67,9 @@
         } else if(IdentityApplicationConstants.Authenticator.PassiveSTS.NAME.equals(federatedAuthenticator.getName())){
             passiveSTSUrl = IdPManagementUIUtil.getProperty(properties,
                     IdentityApplicationConstants.Authenticator.PassiveSTS.PASSIVE_STS_URL).getValue();
+        } else if ("DuoAuth".equals(federatedAuthenticator.getName())){
+            idPName = IdPManagementUIUtil.getProperty(properties,
+                  "idPName").getValue();
         }
     }
     String scimUserEp = null;
@@ -245,6 +249,24 @@ jQuery(document).ready(function(){
        
                         </tr>
               
+                    </table>
+                    </div>
+
+                    <h2 id="duoconfighead"  class="sectionSeperator trigger active" style="background-color: beige;">
+                        <a href="#"><fmt:message key='duo.auth.config'/></a>
+                    </h2>
+                    <div class="toggle_container sectionSub" style="margin-bottom:10px;display:none" id="duoconfig">
+
+                    <table class="carbonFormTable">
+                        <tr>
+                            <td class="leftCol-med labelField"><fmt:message key='duo.idp.name'/>:</td>
+                            <td>
+                                <input id="idPName" name="idPName" type="text" value="<%=idPName%>"/>
+                                <div class="sectionHelp">
+                                    <fmt:message key='duo.idp.name.help'/>
+                                </div>
+                            </td>
+                        </tr>
                     </table>
                     </div>
                 </div>
