@@ -28,7 +28,6 @@ import org.wso2.carbon.identity.oauth.cache.OAuthCacheKey;
 import org.wso2.carbon.identity.oauth.common.OAuthConstants;
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.InvalidRefreshTokenException;
 import org.wso2.carbon.identity.oauth2.ResponseHeader;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenReqDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
@@ -95,7 +94,7 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
 
     @Override
     public OAuth2AccessTokenRespDTO issue(OAuthTokenReqMessageContext tokReqMsgCtx)
-            throws IdentityOAuth2Exception, InvalidRefreshTokenException {
+            throws IdentityOAuth2Exception {
         OAuth2AccessTokenRespDTO tokenRespDTO = new OAuth2AccessTokenRespDTO();
         OAuth2AccessTokenReqDTO oauth2AccessTokenReqDTO = tokReqMsgCtx.getOauth2AccessTokenReqDTO();
         String scope = OAuth2Util.buildScopeString(tokReqMsgCtx.getScope());
@@ -120,8 +119,6 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
                     long skew = OAuthServerConfiguration.getInstance().getTimeStampSkewInSeconds() * 1000;
                     if(issuedAt + refreshValidity - (System.currentTimeMillis() + skew) > 1000){
                         refreshToken = oauth2AccessTokenReqDTO.getRefreshToken();
-                    } else {
-                        throw new InvalidRefreshTokenException("Refresh token has been expired");
                     }
                 }
             }
@@ -195,11 +192,20 @@ public class RefreshGrantHandler extends AbstractAuthorizationGrantHandler {
         //remove the previous access token from cache and add the access token info to the cache,
         // if it's enabled.
         if(cacheEnabled){
-            CacheKey cacheKey = new OAuthCacheKey(consumerKey + ":" + authorizedUser + ":" + scope);
-            // Remove the old access token from the cache
-            oauthCache.clearCacheEntry(cacheKey);
-            // Add new access token to the cache
-            oauthCache.addToCache(cacheKey, accessTokenDO);
+            // Remove the old access token from the OAuthCache
+            CacheKey oauthCacheKey = new OAuthCacheKey(clientId + ":" + authorizedUser + ":" + scope);
+            oauthCache.clearCacheEntry(oauthCacheKey);
+
+            // Remove the old access token from the AccessTokenCache
+            CacheKey accessTokenCacheKey = new OAuthCacheKey(oldAccessToken);
+            oauthCache.clearCacheEntry(accessTokenCacheKey);
+
+            // Add new access token to the OAuthCache
+            oauthCache.addToCache(oauthCacheKey, accessTokenDO);
+
+            // Add new access token to the AccessTokenCache
+            accessTokenCacheKey = new OAuthCacheKey(accessToken);
+            oauthCache.addToCache(accessTokenCacheKey, accessTokenDO);
 
             if(log.isDebugEnabled()){
                 log.debug("Access Token info for the refresh token was added to the cache for " +

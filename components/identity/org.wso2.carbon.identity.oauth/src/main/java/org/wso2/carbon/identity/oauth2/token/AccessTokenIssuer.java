@@ -31,7 +31,6 @@ import org.wso2.carbon.identity.oauth.common.exception.InvalidOAuthClientExcepti
 import org.wso2.carbon.identity.oauth.config.OAuthServerConfiguration;
 import org.wso2.carbon.identity.oauth.dao.OAuthAppDAO;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-import org.wso2.carbon.identity.oauth2.InvalidRefreshTokenException;
 import org.wso2.carbon.identity.oauth2.ResponseHeader;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenReqDTO;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
@@ -89,7 +88,7 @@ public class AccessTokenIssuer {
     }
 
     public OAuth2AccessTokenRespDTO issue(OAuth2AccessTokenReqDTO tokenReqDTO)
-            throws IdentityException, InvalidOAuthClientException, InvalidRefreshTokenException {
+            throws IdentityException, InvalidOAuthClientException {
 
         String grantType = tokenReqDTO.getGrantType();
         OAuth2AccessTokenRespDTO tokenRespDTO;
@@ -224,9 +223,10 @@ public class AccessTokenIssuer {
         AuthorizationGrantCacheKey oldCacheKey = new AuthorizationGrantCacheKey(tokenReqDTO.getAuthorizationCode());
         //checking getUserAttributesId vale of cacheKey before retrieve entry from cache as it causes to NPE
         if(oldCacheKey.getUserAttributesId() != null){
-            CacheEntry userAttributesCacheEntry = AuthorizationGrantCache.getInstance().getValueFromCache(oldCacheKey);
+            CacheEntry authorizationGrantCacheEntry = AuthorizationGrantCache.getInstance()
+                    .getValueFromCache(oldCacheKey);
             AuthorizationGrantCacheKey newCacheKey = new AuthorizationGrantCacheKey(tokenRespDTO.getAccessToken());
-            AuthorizationGrantCache.getInstance().addToCache(newCacheKey,userAttributesCacheEntry);
+            AuthorizationGrantCache.getInstance().addToCache(newCacheKey,authorizationGrantCacheEntry);
             AuthorizationGrantCache.getInstance().clearCacheEntry(oldCacheKey);
         }
     }

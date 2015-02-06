@@ -1,12 +1,10 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.identity</groupId>
     <artifactId>carbon-identity</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.3.4-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -25,7 +23,6 @@
 
     <modules>
         <module>service-stubs/identity</module>
-
         <module>components/idp-mgt</module>
         <module>components/authenticators</module>
         <module>components/cassandra-userstore</module>
@@ -131,19 +128,6 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
-    <distributionManagement>
-        <repository>
-            <id>wso2-maven2-repository</id>
-            <name>WSO2 Maven2 Repository</name>
-            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>wso2-maven2-snapshot-repository</id>
-            <name>WSO2 Maven2 Snapshot Repository</name>
-            <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/snapshots/maven2/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -450,13 +434,13 @@
             </dependency>
 
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.authenticator.saml2.sso.server.feature</artifactId>
                 <version>${carbon.identity.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.authenticator.saml2.sso.ui.feature</artifactId>
                 <version>${carbon.identity.version}</version>
                 <type>zip</type>
@@ -1130,7 +1114,7 @@
             <dependency>
                 <groupId>org.apache.amber</groupId>
                 <artifactId>openidconnect-authzserver</artifactId>
-                <version>0.22.1358727-wso2v3</version>
+                <version>0.22.1358727-wso2v7</version>
             </dependency>
             <!--dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -1461,13 +1445,13 @@
                 <type>zip</type>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.directory.service.mgr.server.feature</artifactId>
                 <version>${carbon.identity.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.directory.service.mgr.ui.feature</artifactId>
                 <version>${carbon.identity.version}</version>
                 <type>zip</type>
@@ -1724,19 +1708,19 @@
             </dependency>
 
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.authenticator.iwa.server.feature</artifactId>
                 <version>${carbon.identity.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.authenticator.iwa.ui.feature</artifactId>
                 <version>${carbon.identity.version}</version>
                 <type>zip</type>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.identity</groupId>
                 <artifactId>org.wso2.carbon.identity.notification.mgt.server.feature</artifactId>
                 <version>${carbon.identity.version}</version>
                 <type>zip</type>
@@ -1860,15 +1844,15 @@
         <!-- Carbon kernel version -->
         <carbon.kernel.version>4.3.0</carbon.kernel.version>
         <carbon.kernel.package.import.version.range>[4.3.0, 4.4.0)</carbon.kernel.package.import.version.range>
-	    <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
+	<carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!--Carbon commons version-->
-        <carbon.identity.version>4.3.0-SNAPSHOT</carbon.identity.version>
-        <carbon.commons.version>4.3.0</carbon.commons.version>
+        <carbon.commons.version>4.3.4</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
 
         <!--Carbon identity version-->
-        <carbon.identity.package.export.version>4.3.0</carbon.identity.package.export.version>
+        <carbon.identity.version>4.3.4-SNAPSHOT</carbon.identity.version>
+        <carbon.identity.package.export.version>4.3.2</carbon.identity.package.export.version>
         <carbon.identity.package.import.version.range>[4.3.0, 4.4.0)</carbon.identity.package.import.version.range>
 
         <!-- Axis2 Version -->
@@ -1906,7 +1890,7 @@
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
-        <wss4j.version>1.5.11.wso2v8</wss4j.version>
+        <wss4j.version>1.5.11.wso2v9</wss4j.version>
         <imp.pkg.version.wss4j>[1.5.11.wso2v8,2)</imp.pkg.version.wss4j>
         <wsdl4j.wso2.version>1.6.2.wso2v4</wsdl4j.wso2.version>
         <jetty.version>6.1.5</jetty.version>
@@ -1944,11 +1928,11 @@
         <orbit.version.maven-scm>1.7.0.wso2v1</orbit.version.maven-scm>
 
         <!-- Rampart -->
-        <rampart.version>1.6.1-wso2v13</rampart.version>
-        <rampart.wso2.version>1.6.1.wso2v13</rampart.wso2.version>
-        <rampart.mar.version>1.6.1-wso2v13</rampart.mar.version>
-        <rampart.osgi.version>1.6.1.wso2v13</rampart.osgi.version>
-        <orbit.version.rampart>1.6.1.wso2v13</orbit.version.rampart>
+        <rampart.version>1.6.1-wso2v14</rampart.version>
+        <rampart.wso2.version>1.6.1.wso2v14</rampart.wso2.version>
+        <rampart.mar.version>1.6.1-wso2v14</rampart.mar.version>
+        <rampart.osgi.version>1.6.1.wso2v14</rampart.osgi.version>
+        <orbit.version.rampart>1.6.1.wso2v14</orbit.version.rampart>
 
         <!-- Equinox -->
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
@@ -1982,7 +1966,7 @@
 
         <google.step2.wso2.version>1.0.wso2v2</google.step2.wso2.version>
         <google.guice.wso2.version>3.0.wso2v1</google.guice.wso2.version>
-        <charon.wso2.version.identity>2.0.0</charon.wso2.version.identity>
+        <charon.wso2.version.identity>2.0.0-wso2v2</charon.wso2.version.identity>
         <openid4java.wso2.version>0.9.6.wso2v1</openid4java.wso2.version>
         <opensaml2.version>2.4.1.wso2v1</opensaml2.version>
         <opensaml.wso2.version>1.1.0.wso2v1</opensaml.wso2.version>
@@ -2028,20 +2012,24 @@
                         <obrRepository>NONE</obrRepository>
                     </configuration>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <configuration>
-                        <preparationGoals>clean install</preparationGoals>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <arguments>-Dmaven.test.skip=true</arguments>
+                    <preparationGoals>clean install</preparationGoals>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
