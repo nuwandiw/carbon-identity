@@ -522,7 +522,7 @@ public class IdentityProviderManager {
      * @param idPName Unique name of the Identity provider of whose information is requested
      * @param tenantDomain Tenant domain whose information is requested
      * @return <code>IdentityProvider</code> Identity Provider information
-     * @throws IdentityApplicationManagementException Error when enetting Identity Provider
+     * @throws IdentityApplicationManagementException Error when getting Identity Provider
      *         information by IdP name
      */
     public IdentityProvider getIdPByName(String idPName, String tenantDomain)
