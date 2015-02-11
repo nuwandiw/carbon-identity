@@ -306,7 +306,7 @@ jQuery(document).ready(function(){
                             <td>
                                 <input id="webIntegrationKey" name="webIntegrationKey" type="text" value="<%=webIntegrationKey%>"/>
                                 <div class="sectionHelp">
-                                    <fmt:message key='duo.web.integration.help'/>
+                                    <fmt:message key='duo.web.integration.key.help'/>
                                 </div>
                             </td>
                         </tr>
@@ -315,7 +315,7 @@ jQuery(document).ready(function(){
                             <td>
                                 <input id="adminSecretKey" name="adminSecretKey" type="text" value="<%=adminSecretKey%>"/>
                                 <div class="sectionHelp">
-                                    <fmt:message key='duo.admin.secret.help'/>
+                                    <fmt:message key='duo.admin.secret.key.help'/>
                                 </div>
                             </td>
                         </tr>
@@ -324,7 +324,7 @@ jQuery(document).ready(function(){
                             <td>
                                 <input id="adminIntegrationKey" name="adminIntegrationKey" type="text" value="<%=adminIntegrationKey%>"/>
                                 <div class="sectionHelp">
-                                    <fmt:message key='duo.admin.integration.help'/>
+                                    <fmt:message key='duo.admin.integration.key.help'/>
                                 </div>
                             </td>
                         </tr>
