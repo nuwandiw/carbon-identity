@@ -44,6 +44,11 @@
     String userInfoUrl = null;
     String passiveSTSUrl = null;
     String idPName = null;
+    String webIntegrationKey = null;
+    String webSecretKey = null;
+    String adminIntegrationKey = null;
+    String adminSecretKey = null;
+    String duoHost = null;
     FederatedAuthenticatorConfig[] federatedAuthenticators = residentIdentityProvider.getFederatedAuthenticatorConfigs();
     for(FederatedAuthenticatorConfig federatedAuthenticator : federatedAuthenticators){
         Property[] properties = federatedAuthenticator.getProperties();
