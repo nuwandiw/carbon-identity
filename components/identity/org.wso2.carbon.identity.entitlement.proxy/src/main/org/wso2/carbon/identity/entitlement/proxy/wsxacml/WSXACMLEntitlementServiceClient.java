@@ -61,6 +61,7 @@ import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.identity.entitlement.proxy.exception.EntitlementProxyException;
 import org.wso2.carbon.identity.entitlement.proxy.util.CarbonEntityResolver;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -391,11 +392,12 @@ public class WSXACMLEntitlementServiceClient extends AbstractEntitlementServiceC
      *
      */
     private XMLObject unmarshall(String xmlString) throws EntitlementProxyException {
+
         try {
             doBootstrap();
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setExpandEntityReferences(false);
             documentBuilderFactory.setNamespaceAware(true);
+            documentBuilderFactory.setExpandEntityReferences(false);
             DocumentBuilder docBuilder = documentBuilderFactory.newDocumentBuilder();
             docBuilder.setEntityResolver(new CarbonEntityResolver());
             Document document = docBuilder.parse(new ByteArrayInputStream(xmlString.trim().getBytes()));
